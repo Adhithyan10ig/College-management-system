@@ -2,7 +2,13 @@ from pymongo import MongoClient
 import os
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-client = MongoClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True)
+
+# Use TLS only for Atlas (cloud), not for local
+if "mongodb+srv" in MONGO_URI:
+    client = MongoClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True)
+else:
+    client = MongoClient(MONGO_URI)
+
 db = client["college_management"]
 
 # Collections
