@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Faculty{% endblock %}
+{% block content %}
+<div class="page-header"><h1>Faculty</h1><p>Manage faculty members</p></div>
+<div class="card">
+  <div class="section-header">
+    <span style="font-size:14px;color:var(--muted);">{{ faculty|length }} faculty members</span>
+    <button class="btn btn-primary" onclick="openModal('addFaculty')">+ Add Faculty</button>
+  </div>
+  <table>
+    <thead><tr><th>Name</th><th>Department</th><th>Email</th><th>Subjects</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for f in faculty %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td><span class="badge badge-yellow">{{ f.dept }}</span></td>
+        <td style="color:var(--muted)">{{ f.email }}</td>
+        <td>{{ f.subjects | join(', ') if f.subjects else '—' }}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteFaculty('{{ f._id }}')">Delete</button></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No faculty added yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="addFaculty">
+  <div class="modal">
+    <h3>Add Faculty Member</h3>
+    <div class="form-group"><label>Full Name</label><input id="f_name" placeholder="Dr. Rajan Kumar"></div>
+    <div class="form-group"><label>Department</label>
+      <select id="f_dept"><option>CSE</option><option>ECE</option><option>ME</option><option>CE</option></select>
+    </div>
+    <div class="form-group"><label>Email</label><input id="f_email" type="email"></div>
+    <div class="form-group"><label>Subjects (comma-separated)</label><input id="f_subjects" placeholder="CS101, CS202"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addFaculty')" style="background:var(--border);color:var(--text)">Cancel</button>
+      <button class="btn btn-primary" onclick="submitFaculty()">Add Faculty</button>
+    </div>
+  </div>
+</div>
+<script>
+async function submitFaculty() {
+  const data = {
+    name: document.getElementById('f_name').value,
+    dept: document.getElementById('f_dept').value,
+    email: document.getElementById('f_email').value,
+    subjects: document.getElementById('f_subjects').value.split(',').map(s=>s.trim()),
+  };
+  await fetch('/api/faculty', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  location.reload();
+}
+async function deleteFaculty(id) {
+  if (!confirm('Delete this faculty?')) return;
+  await fetch('/api/faculty/'+id, {method:'DELETE'});
+  location.reload();
+}
+</script>
+{% endblock %}

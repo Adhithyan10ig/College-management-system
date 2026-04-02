@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>Welcome back, {{ user }}. Here's your college at a glance.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon">👤</div>
+    <div class="stat-label">Total Students</div>
+    <div class="stat-value">{{ stats.students }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">👨‍🏫</div>
+    <div class="stat-label">Faculty Members</div>
+    <div class="stat-value">{{ stats.faculty }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📚</div>
+    <div class="stat-label">Active Courses</div>
+    <div class="stat-value">{{ stats.courses }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">💰</div>
+    <div class="stat-label">Fees Pending</div>
+    <div class="stat-value">{{ stats.fees_pending }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-header">
+    <div>
+      <h3 style="font-family:'Playfair Display',serif; font-size:18px;">Quick Navigation</h3>
+      <p style="color:var(--muted); font-size:13px; margin-top:4px;">Jump to any module</p>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+    {% for name, icon, path in [('Students','👤','/students'),('Faculty','👨‍🏫','/faculty'),('Courses','📚','/courses'),('Attendance','✅','/attendance'),('Marks','📝','/marks'),('Fees','💰','/fees')] %}
+    <a href="{{ path }}" style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);transition:border-color 0.2s;"
+      onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+      <span style="font-size:22px;">{{ icon }}</span>
+      <span style="font-size:14px;font-weight:500;">{{ name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

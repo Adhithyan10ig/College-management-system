@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="page-header"><h1>Courses</h1><p>Manage course offerings and enrollment</p></div>
+<div class="card">
+  <div class="section-header">
+    <span style="font-size:14px;color:var(--muted);">{{ courses|length }} courses</span>
+    <button class="btn btn-primary" onclick="openModal('addCourse')">+ Add Course</button>
+  </div>
+  <table>
+    <thead><tr><th>Code</th><th>Course Name</th><th>Department</th><th>Credits</th></tr></thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td><span class="badge badge-blue">{{ c.code }}</span></td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.dept }}</td>
+        <td>{{ c.credits or '—' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px">No courses added yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="addCourse">
+  <div class="modal">
+    <h3>Add New Course</h3>
+    <div class="form-group"><label>Course Code</label><input id="c_code" placeholder="CS101"></div>
+    <div class="form-group"><label>Course Name</label><input id="c_name" placeholder="Data Structures"></div>
+    <div class="form-group"><label>Department</label>
+      <select id="c_dept"><option>CSE</option><option>ECE</option><option>ME</option><option>CE</option></select>
+    </div>
+    <div class="form-group"><label>Credits</label><input id="c_credits" type="number" placeholder="4"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addCourse')" style="background:var(--border);color:var(--text)">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCourse()">Add Course</button>
+    </div>
+  </div>
+</div>
+<script>
+async function submitCourse() {
+  const data = {
+    code: document.getElementById('c_code').value,
+    name: document.getElementById('c_name').value,
+    dept: document.getElementById('c_dept').value,
+    credits: parseInt(document.getElementById('c_credits').value),
+  };
+  await fetch('/api/courses', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  location.reload();
+}
+</script>
+{% endblock %}

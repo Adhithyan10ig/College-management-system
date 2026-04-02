@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Students</h1>
+  <p>Manage all enrolled students</p>
+</div>
+<div class="card">
+  <div class="section-header">
+    <span style="font-size:14px;color:var(--muted);">{{ students|length }} students total</span>
+    <button class="btn btn-primary" onclick="openModal('addStudent')">+ Add Student</button>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Roll No</th><th>Name</th><th>Department</th><th>Batch</th><th>Email</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td><span class="badge badge-blue">{{ s.roll_no }}</span></td>
+        <td>{{ s.name }}</td>
+        <td>{{ s.dept }}</td>
+        <td>{{ s.batch }}</td>
+        <td style="color:var(--muted)">{{ s.email }}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudent('{{ s._id }}')">Delete</button>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No students yet. Add one!</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="addStudent">
+  <div class="modal">
+    <h3>Add New Student</h3>
+    <div class="form-group"><label>Full Name</label><input id="s_name" placeholder="e.g. Adhithyan K"></div>
+    <div class="form-group"><label>Roll Number</label><input id="s_roll" placeholder="e.g. CS24001"></div>
+    <div class="form-group"><label>Department</label>
+      <select id="s_dept"><option>CSE</option><option>ECE</option><option>ME</option><option>CE</option></select>
+    </div>
+    <div class="form-group"><label>Batch Year</label><input id="s_batch" type="number" placeholder="e.g. 2024"></div>
+    <div class="form-group"><label>Email</label><input id="s_email" type="email" placeholder="student@email.com"></div>
+    <div class="form-group"><label>Phone</label><input id="s_phone" placeholder="9XXXXXXXXX"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addStudent')" style="background:var(--border);color:var(--text)">Cancel</button>
+      <button class="btn btn-primary" onclick="submitStudent()">Add Student</button>
+    </div>
+  </div>
+</div>
+
+<script>
+async function submitStudent() {
+  const data = {
+    name: document.getElementById('s_name').value,
+    roll_no: document.getElementById('s_roll').value,
+    dept: document.getElementById('s_dept').value,
+    batch: parseInt(document.getElementById('s_batch').value),
+    email: document.getElementById('s_email').value,
+    phone: document.getElementById('s_phone').value,
+  };
+  await fetch('/api/students', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  location.reload();
+}
+async function deleteStudent(id) {
+  if (!confirm('Delete this student?')) return;
+  await fetch('/api/students/'+id, { method:'DELETE' });
+  location.reload();
+}
+</script>
+{% endblock %}

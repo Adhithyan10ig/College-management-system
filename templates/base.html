@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMS — {% block title %}{% endblock %}</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --sidebar: #dfdfdf;
+        --card: #ffffff;
+        --border: #30363d;
+        --accent: #0859a2;
+        --accent2: #0859a2;
+        --text: #000000;
+        --muted: #000000;
+        --success: #3fb950;
+        --danger: #f85149;
+        --info: #58a6ff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        font-family: "DM Sans", sans-serif;
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        min-height: 100vh;
+        background: var(--sidebar);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding: 24px 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+      }
+      .sidebar-logo img {
+        width: 100%;
+        height: auto;
+        align-items: center;
+      }
+      .sidebar-logo .icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .sidebar-logo .name {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+      }
+      .nav {
+        flex: 1;
+        padding: 16px 12px;
+      }
+      .nav-section {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--muted);
+        padding: 12px 8px 6px;
+      }
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 8px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        margin-bottom: 2px;
+      }
+      .nav a:hover {
+        background: var(--card);
+        color: var(--text);
+      }
+      .nav a.active {
+        background: rgba(232, 169, 69, 0.12);
+        color: var(--accent);
+      }
+      .nav a .ico {
+        width: 18px;
+        text-align: center;
+        font-size: 16px;
+      }
+      .sidebar-user {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #0d1117;
+      }
+      .user-info .uname {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .user-info .urole {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .logout {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .logout:hover {
+        color: var(--danger);
+      }
+
+      /* Main */
+      .main {
+        margin-left: 240px;
+        flex: 1;
+        padding: 32px 36px;
+      }
+      .page-header {
+        margin-bottom: 28px;
+      }
+      .page-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+      }
+      .page-header p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 4px;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 6px 0 4px;
+        color: var(--text);
+      }
+      .stat-icon {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: 28px;
+        opacity: 1;
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      thead th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+      }
+      tbody tr {
+        transition: background 0.1s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      tbody td {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+        font-size: 13px;
+      }
+
+      /* Badges */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .badge-green {
+        background: rgba(63, 185, 80, 0.12);
+        color: var(--success);
+      }
+      .badge-red {
+        background: rgba(248, 81, 73, 0.12);
+        color: var(--danger);
+      }
+      .badge-yellow {
+        background: rgba(232, 169, 69, 0.12);
+        color: var(--accent);
+      }
+      .badge-blue {
+        background: rgba(88, 166, 255, 0.12);
+        color: var(--info);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        transition: opacity 0.15s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #0d1117;
+      }
+      .btn-danger {
+        background: rgba(248, 81, 73, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+      }
+      .btn-success {
+        background: rgba(63, 185, 80, 0.15);
+        color: var(--success);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+      }
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 32px;
+        width: 460px;
+        animation: popIn 0.2s ease both;
+      }
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .modal h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        outline: none;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(232, 169, 69, 0.1);
+      }
+      .modal-footer {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <img
+          src="https://www.adishankara.ac.in/assets/images/logo.png"
+          alt="Logo"
+        />
+      </div>
+      <nav class="nav">
+        <div class="nav-section">Overview</div>
+        <a
+          href="/dashboard"
+          class="{% if request.path=='/dashboard' %}active{% endif %}"
+        >
+          <span class="ico">📊</span> Dashboard
+        </a>
+        <div class="nav-section">Academic</div>
+        <a
+          href="/students"
+          class="{% if '/students' in request.path %}active{% endif %}"
+        >
+          <span class="ico">👤</span> Students
+        </a>
+        <a
+          href="/faculty"
+          class="{% if '/faculty' in request.path %}active{% endif %}"
+        >
+          <span class="ico">👨‍🏫</span> Faculty
+        </a>
+        <a
+          href="/courses"
+          class="{% if '/courses' in request.path %}active{% endif %}"
+        >
+          <span class="ico">📚</span> Courses
+        </a>
+        <div class="nav-section">Records</div>
+        <a
+          href="/attendance"
+          class="{% if '/attendance' in request.path %}active{% endif %}"
+        >
+          <span class="ico">✅</span> Attendance
+        </a>
+        <a
+          href="/marks"
+          class="{% if '/marks' in request.path %}active{% endif %}"
+        >
+          <span class="ico">📝</span> Marks
+        </a>
+        <a
+          href="/fees"
+          class="{% if '/fees' in request.path %}active{% endif %}"
+        >
+          <span class="ico">💰</span> Fees
+        </a>
+      </nav>
+      <div class="sidebar-user">
+        <div class="avatar">{{ user[0].upper() }}</div>
+        <div class="user-info">
+          <div class="uname">{{ user }}</div>
+          <div class="urole">{{ role }}</div>
+        </div>
+        <a href="/logout" class="logout" title="Logout">Logout</a>
+      </div>
+    </aside>
+    <main class="main">{% block content %}{% endblock %}</main>
+    <script>
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+    </script>
+  </body>
+</html>

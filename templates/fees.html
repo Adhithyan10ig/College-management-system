@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Fees{% endblock %}
+{% block content %}
+<div class="page-header"><h1>Fee Management</h1><p>Track and manage student fee payments</p></div>
+<div class="card">
+  <div class="section-header">
+    <span style="font-size:14px;color:var(--muted);">Fee records</span>
+    <button class="btn btn-primary" onclick="openModal('addFee')">+ Add Fee Record</button>
+  </div>
+  <table>
+    <thead><tr><th>Student</th><th>Total Amount</th><th>Paid</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td style="font-size:12px;color:var(--muted)">{{ r.student_id }}</td>
+        <td>₹{{ "{:,}".format(r.amount) }}</td>
+        <td>₹{{ "{:,}".format(r.paid) }}</td>
+        <td>₹{{ "{:,}".format(r.amount - r.paid) }}</td>
+        <td>{{ r.due_date }}</td>
+        <td>
+          {% if r.status == 'paid' %}
+            <span class="badge badge-green">Paid</span>
+          {% else %}
+            <span class="badge badge-red">Pending</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.status != 'paid' %}
+          <button class="btn btn-success btn-sm" onclick="markPaid('{{ r._id }}')">Mark Paid</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No fee records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="addFee">
+  <div class="modal">
+    <h3>Add Fee Record</h3>
+    <div class="form-group"><label>Student</label>
+      <select id="fee_student">{% for s in students %}<option value="{{ s._id }}">{{ s.roll_no }} — {{ s.name }}</option>{% endfor %}</select>
+    </div>
+    <div class="form-group"><label>Total Amount (₹)</label><input id="fee_amount" type="number" placeholder="50000"></div>
+    <div class="form-group"><label>Amount Paid (₹)</label><input id="fee_paid" type="number" placeholder="0"></div>
+    <div class="form-group"><label>Due Date</label><input id="fee_due" type="date"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addFee')" style="background:var(--border);color:var(--text)">Cancel</button>
+      <button class="btn btn-primary" onclick="submitFee()">Save</button>
+    </div>
+  </div>
+</div>
+<script>
+async function submitFee() {
+  const paid = parseInt(document.getElementById('fee_paid').value) || 0;
+  const amount = parseInt(document.getElementById('fee_amount').value);
+  const data = {
+    student_id: document.getElementById('fee_student').value,
+    amount, paid,
+    due_date: document.getElementById('fee_due').value,
+    status: paid >= amount ? 'paid' : 'pending',
+  };
+  await fetch('/api/fees', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  location.reload();
+}
+async function markPaid(id) {
+  await fetch('/api/fees/'+id+'/pay', {method:'POST'});
+  location.reload();
+}
+</script>
+{% endblock %}
