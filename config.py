@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import os
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True)
 db = client["college_management"]
 
 # Collections
