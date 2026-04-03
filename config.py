@@ -3,15 +3,20 @@ import os
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 
-# Use TLS only for Atlas (cloud), not for local
 if "mongodb+srv" in MONGO_URI:
-    client = MongoClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True)
+    client = MongoClient(
+        MONGO_URI,
+        tls=True,
+        tlsAllowInvalidCertificates=True,
+        serverSelectionTimeoutMS=5000,
+        connectTimeoutMS=5000,
+        socketTimeoutMS=5000
+    )
 else:
     client = MongoClient(MONGO_URI)
 
 db = client["college_management"]
 
-# Collections
 users_col       = db["users"]
 students_col    = db["students"]
 faculty_col     = db["faculty"]
