@@ -196,7 +196,15 @@ def seed_admin():
             "role": "admin"
         })
         print("✅ Admin user created: admin / admin123")
-
+@app.route("/setup")
+def setup():
+    users_col.delete_many({"username": "admin"})
+    users_col.insert_one({
+        "username": "admin",
+        "password": generate_password_hash("admin123"),
+        "role": "admin"
+    })
+    return "Admin user created! Go to /login now."
 if __name__ == "__main__":
     seed_admin()
     app.run(debug=True)
