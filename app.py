@@ -206,5 +206,4 @@ def setup():
     })
     return "Admin user created! Go to /login now."
 if __name__ == "__main__":
-    seed_admin()
     app.run(debug=True)

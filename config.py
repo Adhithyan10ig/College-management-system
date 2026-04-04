@@ -1,17 +1,11 @@
 from pymongo import MongoClient
 import os
+import certifi
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 
-if "mongodb+srv" in MONGO_URI:
-    client = MongoClient(
-        MONGO_URI,
-        tls=True,
-        tlsAllowInvalidCertificates=True,
-        serverSelectionTimeoutMS=5000,
-        connectTimeoutMS=5000,
-        socketTimeoutMS=5000
-    )
+if "mongodb+srv" in MONGO_URI or "mongodb.net" in MONGO_URI:
+    client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 else:
     client = MongoClient(MONGO_URI)
 
